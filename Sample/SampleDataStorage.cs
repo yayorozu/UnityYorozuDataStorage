@@ -16,45 +16,45 @@ namespace Sample
                 new DataSample("c", 3),
             };
             
-            DataStorage.AddListener<DataSample>((o, isNew) =>
-            {
-                var dd = o as DataSample;
-                Debug.Log($"Add {dd.Key}");
-            });
-            DataStorage.DeleteListener<DataSample>(Delete);
+            DataStorage<DataSample>.UpdateEvent += (d, isNew) =>
+            { 
+                Debug.Log($"Add {d.Key}");
+            };
+            
+            DataStorage<DataSample>.DeleteEvent += Delete;
 
-            DataStorage.Add(data);
+            DataStorage<DataSample>.Add(data);
             
             // データを取得して更新
-            if (DataStorage.TryGet<DataSample>("a", out var d1))
+            if (DataStorage<DataSample>.TryGet("a", out var d1))
             {
                 Debug.Log(d1.Value);
                 d1.Value = 100;
             }
-            if (DataStorage.TryGet<DataSample>("b", out var d2))
+            if (DataStorage<DataSample>.TryGet("b", out var d2))
             {
                 Debug.Log(d2.Value);
             }
-            if (DataStorage.TryGet<DataSample>("c", out var d3))
+            if (DataStorage<DataSample>.TryGet("c", out var d3))
             {
                 Debug.Log(d3.Value);
             }
             
-            if (DataStorage.TryGet<DataSample>("a", out var d1_))
+            if (DataStorage<DataSample>.TryGet("a", out var d1_))
             {
                 // 100
                 Debug.Log(d1_.Value);
             }
-
-            DataStorage.Remove<DataSample>("a");
+            
+            DataStorage<DataSample>.Remove("a");
             
             // 削除イベント削除
-            DataStorage.RemoveDeleteListener<DataSample>(Delete);
+            DataStorage<DataSample>.DeleteEvent -= Delete;
             
-            DataStorage.Remove<DataSample>("b");
+            DataStorage<DataSample>.Remove("b");
 
             // 削除したデータを取得してみる
-            if (!DataStorage.TryGet<DataSample>("a", out var _))
+            if (!DataStorage<DataSample>.TryGet("a", out var _))
             {
                 Debug.Log("delete");
             }
@@ -68,13 +68,14 @@ namespace Sample
 
         private class DataSample : IData
         {
-            public string Key { get; }
+            public string Key => _key;
+            private string _key;
 
             public int Value;
 
             public DataSample(string key, int value)
             {
-                Key = key;
+                _key = key;
                 Value = value;
             }
         }

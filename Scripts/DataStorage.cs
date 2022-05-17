@@ -1,68 +1,51 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Yorozu.Data
 {
-    public static partial class DataStorage
+    public static class DataStorage
     {
-        private static Dictionary<Type, Storage> _storages;
+        internal static Dictionary<Type, Action> activeStorages;
 
         static DataStorage()
         {
-            _storages = new Dictionary<Type, Storage>();
+            activeStorages = new Dictionary<Type, Action>();
         }
-        
-        /// <summary>
-        /// データの個数
-        /// </summary>
-        public static int Count<T>() where T : IData
-        {
-            var t = typeof(T);
-            if (!_storages.ContainsKey(t))
-                return 0;
 
-            return _storages[t].Count;
-        }
-        
-        /// <summary>
-        /// 指定Keyが保存されているか
-        /// </summary>
-        public static bool Contains<T>(string key) where T : IData
+        internal static void Add(Type type, Action clear)
         {
-            var t = typeof(T);
-            if (!_storages.ContainsKey(t))
-                return false;
+            activeStorages.Add(type, clear);
+        }
 
-            return _storages[t].Contains(key);
-        }
-        
         /// <summary>
-        /// データ取得
+        /// 登録してある全データを削除
         /// </summary>
-        public static T Get<T>(string key) where T : IData
+        public static void Clear()
         {
-            if (TryGet<T>(key, out var data))
+            foreach (var storage in activeStorages)
             {
-                return data;
+                storage.Value?.Invoke();
             }
+        }
 
-            return default;
+        public static void Add<T>(T data) where T : IData
+        {
+            DataStorage<T>.Add(data);
+        }
+
+        public static void Add<T>(IList<T> data) where T : IData
+        {
+            DataStorage<T>.Add(data);
         }
         
-        /// <summary>
-        /// データ取得
-        /// </summary>
-        public static bool TryGet<T>(string key, out T data) where T : IData
+        public static void Remove<T>(T data) where T : IData
         {
-            var t = typeof(T);
-            if (!_storages.ContainsKey(t))
-            {
-                data = default;
-                return false;
-            }
-
-            return _storages[t].TryGet(key, out data);
+            DataStorage<T>.Remove(data);
+        }
+        
+        public static void Remove<T>(IList<T> data) where T : IData
+        {
+            DataStorage<T>.Remove(data);
         }
     }
 }
