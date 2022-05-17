@@ -51,6 +51,30 @@ namespace Yorozu.Data
         {
             return _storage.TryGet(key, out data);
         }
+
+        /// <summary>
+        /// 登録されていないランダムな文字列をKeyとして返す
+        /// </summary>
+        public static string GetRandomKey()
+        {
+            const string CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            var size = 32;
+            var stringBuilder = new System.Text.StringBuilder(size);
+            while (true)
+            {
+                stringBuilder.Clear();
+                for (var i = 0; i < size; ++i)
+                {
+                    var range = UnityEngine.Random.Range(0, CHARS.Length);
+                    stringBuilder.Append(CHARS[range]);
+                }
+
+                var randomKey = stringBuilder.ToString();
+                if (!Contains(randomKey))
+                    return randomKey;
+            }
+        }
         
         /// <summary>
         /// データ追加更新イベント
@@ -75,6 +99,9 @@ namespace Yorozu.Data
             }
         }
  
+        /// <summary>
+        /// 追加
+        /// </summary>
         public static void Add(T data)
         {
             var isNew = _storage.Add(data.Key, data);
