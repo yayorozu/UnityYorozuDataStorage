@@ -6,7 +6,7 @@ namespace Yorozu.Data
     public static class DataStorage
     {
         internal static Dictionary<Type, Action> activeStorages;
-
+        
         static DataStorage()
         {
             activeStorages = new Dictionary<Type, Action>();
@@ -15,6 +15,13 @@ namespace Yorozu.Data
         internal static void Add(Type type, Action clear)
         {
             activeStorages.Add(type, clear);
+            
+#if UNITY_EDITOR
+            if (Tool.DataStorageWindow.instance != null)
+            {
+                Tool.DataStorageWindow.instance.Refresh();
+            }
+#endif
         }
 
         /// <summary>

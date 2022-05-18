@@ -24,6 +24,9 @@ namespace Sample
             DataStorage<DataSample>.DeleteEvent += Delete;
 
             DataStorage<DataSample>.Add(data);
+
+            var key = DataStorage<DataSample>.GetRandomKey();
+            DataStorage<DataSample>.Add(new DataSample(key, 4));
             
             // データを取得して更新
             if (DataStorage<DataSample>.TryGet("a", out var d1))
@@ -71,6 +74,18 @@ namespace Sample
             public string Key => _key;
             private string _key;
 
+            private List<int> _ivalues = new List<int>()
+            {
+                2,
+            };
+
+            private Vector2[] _values = new Vector2[]
+            {
+                Vector2.down, 
+                Vector2.down, 
+            };
+
+            private Vector2 V2 = Vector2.left;
             public int Value;
 
             public DataSample(string key, int value)
