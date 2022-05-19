@@ -32,6 +32,14 @@ namespace Yorozu.Data
         public static bool Contains(string key) => _storage.Contains(key);
         
         /// <summary>
+        /// 全部取得
+        /// </summary>
+        public static IEnumerable<T> All()
+        {
+            return _storage.All<T>();
+        }
+        
+        /// <summary>
         /// データ取得
         /// </summary>
         public static T Get(string key)
