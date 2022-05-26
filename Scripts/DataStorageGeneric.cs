@@ -95,6 +95,9 @@ namespace Yorozu.Data
         /// </summary>
         public static void AddUpdateListener(string key, UpdateDelegate @delegate)
         {
+            if (string.IsNullOrEmpty(key))
+                return;
+            
             if (_updates.TryGetValue(key, out var a))
             {
                 a += @delegate;
