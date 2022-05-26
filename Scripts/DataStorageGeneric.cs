@@ -89,7 +89,7 @@ namespace Yorozu.Data
         /// </summary>
         public delegate void UpdateDelegate(T data);
         private static Dictionary<string, UpdateDelegate> _updates = new Dictionary<string, UpdateDelegate>();
-
+        
         /// <summary>
         /// 更新イベント監視
         /// </summary>
@@ -104,6 +104,11 @@ namespace Yorozu.Data
             {
                 _updates.Add(key, @delegate);
             }
+        }
+        
+        public static void AddUpdateListener(T data, UpdateDelegate @delegate)
+        {
+            AddUpdateListener(data.Key, @delegate);
         }
         
         /// <summary>
