@@ -85,15 +85,66 @@ namespace Yorozu.Data
         }
         
         /// <summary>
-        /// データ追加更新イベント
+        /// 特定のデータのみの更新
         /// </summary>
-        public delegate void Update(T data, bool isNew);
+        public delegate void UpdateDelegate(T data);
+        private static Dictionary<string, UpdateDelegate> _updates = new Dictionary<string, UpdateDelegate>();
 
-        private static event Update _updateEvent;
-        public static event Update UpdateEvent
+        /// <summary>
+        /// 更新イベント監視
+        /// </summary>
+        public static void AddUpdateListener(string key, UpdateDelegate @delegate)
         {
-            add => _updateEvent += value;
-            remove => _updateEvent -= value;
+            if (_updates.TryGetValue(key, out var a))
+            {
+                a += @delegate;
+                _updates[key] = a;
+            }
+            else
+            {
+                _updates.Add(key, @delegate);
+            }
+        }
+        
+        /// <summary>
+        /// イベント削除
+        /// </summary>
+        public static void RemoveUpdateListener(string key, UpdateDelegate @delegate)
+        {
+            if (!_updates.TryGetValue(key, out var a))
+                return;
+
+            if (a == null)
+                return;
+
+            a -= @delegate;
+            if (a == null)
+                _updates.Remove(key);
+            else
+                _updates[key] = a;
+        }
+
+        /// <summary>
+        /// 全Updateイベント削除
+        /// </summary>
+        public static void RemoveAllUpdateListener(string key)
+        {
+            if (!_updates.TryGetValue(key, out var a))
+                return;
+            
+            _updates.Remove(key);
+        }
+        
+        /// <summary>
+        /// 全データ追加更新イベント
+        /// </summary>
+        public delegate void AllUpdateDelegate(T data, bool isNew);
+
+        private static event AllUpdateDelegate _allUpdateEvent;
+        public static event AllUpdateDelegate AllUpdateEvent
+        {
+            add => _allUpdateEvent += value;
+            remove => _allUpdateEvent -= value;
         }
 
         /// <summary>
@@ -113,7 +164,19 @@ namespace Yorozu.Data
         public static void Add(T data)
         {
             var isNew = _storage.Add(data.Key, data);
-            _updateEvent?.Invoke(data, isNew);
+            _allUpdateEvent?.Invoke(data, isNew);
+            if (_updates.ContainsKey(data.Key))
+            {
+                _updates[data.Key]?.Invoke(data);
+            }
+        }
+
+        /// <summary>
+        /// データ更新した際に呼び出す
+        /// </summary>
+        public static void Update(T data)
+        {
+            Add(data);
         }
         
         /// <summary>
@@ -121,7 +184,7 @@ namespace Yorozu.Data
         /// </summary>
         public static void ClearAddEvent()
         {
-            _updateEvent = null;
+            _allUpdateEvent = null;
         }
         
         public delegate void Delete(IData data);

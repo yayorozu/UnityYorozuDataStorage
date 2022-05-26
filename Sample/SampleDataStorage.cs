@@ -16,7 +16,7 @@ namespace Sample
                 new DataSample("c", 3),
             };
             
-            DataStorage<DataSample>.UpdateEvent += (d, isNew) =>
+            DataStorage<DataSample>.AllUpdateEvent += (d, isNew) =>
             { 
                 Debug.Log($"Add {d.Key}");
             };
