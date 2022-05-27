@@ -63,6 +63,12 @@ namespace Yorozu.Data.Tool
                 {
                     name = name.Substring(1, name.IndexOf(">", StringComparison.Ordinal) - 1);
                 }
+                
+                if (v == null)
+                {
+                    root.AddChild(new TreeViewItem(id++, depth, $"{name}: NULL"));
+                    continue;
+                }
 
                 var valueType = v.GetType();
                 if (valueType.IsArray)
