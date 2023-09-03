@@ -1,0 +1,21 @@
+{
+  "name": "yorozu.data-storage",
+  "version": "1.0.0",
+  "displayName": "Yorozu Storage",
+  "description": "データを管理するツール",
+  "keywords": [
+    "Yorozu"
+  ],
+  "author": {
+    "name": "Yorozu",
+    "email": "hatch.tech.eng@gmail.com",
+    "url": "https://github.com/yayorozu"
+  },
+  "samples": [
+    {
+      "displayName": "Sample",
+      "description": "",
+      "path": "Samples~/SampleStorage"
+    }
+  ]
+}
